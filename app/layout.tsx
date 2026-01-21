@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { WalletProvider } from "@/context/WalletContext";
+import { Navbar } from "@/components/Navbar";
+import { WalletModal } from "@/components/WalletModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,12 +25,22 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // We need to import these dynamically or ensure "use client" wraps them if passing context
+  // But Layout is a Server Component by default in Next.js App Router.
+  // We cannot use Context directly in a Server Component layout.
+  // So we need a "Providers" client component or assume WalletProvider is "use client".
+  // WalletProvider IS "use client".
+
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >
-        {children}
+        <WalletProvider>
+          <Navbar />
+          <main className="pt-20">{children}</main>
+          <WalletModal />
+        </WalletProvider>
       </body>
     </html>
   );
