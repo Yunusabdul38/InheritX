@@ -45,7 +45,7 @@ pub struct InheritancePlan {
     pub total_allocation_bp: u32, // Total allocation in basis points
     pub owner: Address,           // Plan owner
     pub created_at: u64,
-    pub is_active: bool,          // Plan activation status
+    pub is_active: bool, // Plan activation status
 }
 
 #[contracterror]
