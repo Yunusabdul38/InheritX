@@ -895,7 +895,7 @@ fn test_get_plan_details() {
     assert!(plan.is_some());
 
     let plan_data = plan.unwrap();
-    assert_eq!(plan_data.is_active, true);
+    assert!(plan_data.is_active);
     assert_eq!(plan_data.total_amount, 1000000u64);
 
     // Deactivate and check again
@@ -903,5 +903,5 @@ fn test_get_plan_details() {
 
     let deactivated_plan = client.get_plan_details(&plan_id);
     assert!(deactivated_plan.is_some());
-    assert_eq!(deactivated_plan.unwrap().is_active, false);
+    assert!(!deactivated_plan.unwrap().is_active);
 }
