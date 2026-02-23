@@ -91,6 +91,7 @@ use sqlx::PgPool;
 pub struct UserClaims {
     pub user_id: uuid::Uuid,
     pub email: String,
+    pub exp: usize,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

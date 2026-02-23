@@ -10,6 +10,22 @@ use jsonwebtoken::{encode, EncodingKey, Header};
 use tower::ServiceExt;
 use uuid::Uuid;
 
+/// Generate a JWT token for a test user
+fn generate_user_token(user_id: Uuid, email: String) -> String {
+    let exp = (chrono::Utc::now() + chrono::Duration::hours(24)).timestamp() as usize;
+    let claims = UserClaims {
+        user_id,
+        email,
+        exp,
+    };
+    encode(
+        &Header::default(),
+        &claims,
+        &EncodingKey::from_secret(b"secret_key_change_in_production"),
+    )
+    .expect("Failed to generate token")
+}
+
 #[tokio::test]
 async fn mark_notification_read_success() {
     let Some(ctx) = helpers::TestContext::from_env().await else {
@@ -40,16 +56,7 @@ async fn mark_notification_read_success() {
     .expect("Failed to create notification");
 
     // 3. Generate token
-    let claims = UserClaims {
-        user_id,
-        email: format!("test-{}@example.com", user_id),
-    };
-    let token = encode(
-        &Header::default(),
-        &claims,
-        &EncodingKey::from_secret(b"secret_key_change_in_production"),
-    )
-    .expect("Failed to generate token");
+    let token = generate_user_token(user_id, format!("test-{}@example.com", user_id));
 
     // 4. Call mark read endpoint
     let response = ctx
@@ -128,16 +135,7 @@ async fn test_retrieve_notifications_returns_only_users_notifications() {
     }
 
     // 4. Generate token for user A
-    let claims = UserClaims {
-        user_id: user_a_id,
-        email: format!("test-{}@example.com", user_a_id),
-    };
-    let token = encode(
-        &Header::default(),
-        &claims,
-        &EncodingKey::from_secret(b"secret_key_change_in_production"),
-    )
-    .expect("Failed to generate token");
+    let token = generate_user_token(user_a_id, format!("test-{}@example.com", user_a_id));
 
     // 5. Call list notifications endpoint
     let response = ctx
@@ -214,16 +212,7 @@ async fn test_retrieve_notifications_count_matches() {
     }
 
     // 3. Generate token
-    let claims = UserClaims {
-        user_id,
-        email: format!("test-{}@example.com", user_id),
-    };
-    let token = encode(
-        &Header::default(),
-        &claims,
-        &EncodingKey::from_secret(b"secret_key_change_in_production"),
-    )
-    .expect("Failed to generate token");
+    let token = generate_user_token(user_id, format!("test-{}@example.com", user_id));
 
     // 4. Call list notifications endpoint
     let response = ctx
@@ -281,16 +270,7 @@ async fn test_retrieve_notifications_empty_list() {
         .expect("Failed to create user");
 
     // 2. Generate token
-    let claims = UserClaims {
-        user_id,
-        email: format!("test-{}@example.com", user_id),
-    };
-    let token = encode(
-        &Header::default(),
-        &claims,
-        &EncodingKey::from_secret(b"secret_key_change_in_production"),
-    )
-    .expect("Failed to generate token");
+    let token = generate_user_token(user_id, format!("test-{}@example.com", user_id));
 
     // 3. Call list notifications endpoint
     let response = ctx
@@ -382,16 +362,7 @@ async fn test_retrieve_notifications_ordered_by_created_at() {
     }
 
     // 3. Generate token
-    let claims = UserClaims {
-        user_id,
-        email: format!("test-{}@example.com", user_id),
-    };
-    let token = encode(
-        &Header::default(),
-        &claims,
-        &EncodingKey::from_secret(b"secret_key_change_in_production"),
-    )
-    .expect("Failed to generate token");
+    let token = generate_user_token(user_id, format!("test-{}@example.com", user_id));
 
     // 4. Call list notifications endpoint
     let response = ctx
@@ -462,16 +433,7 @@ async fn cannot_mark_another_user_notification() {
     .expect("Failed to create notification");
 
     // 3. Generate token for user A
-    let claims = UserClaims {
-        user_id: user_a_id,
-        email: format!("test-{}@example.com", user_a_id),
-    };
-    let token = encode(
-        &Header::default(),
-        &claims,
-        &EncodingKey::from_secret(b"secret_key_change_in_production"),
-    )
-    .expect("Failed to generate token");
+    let token = generate_user_token(user_a_id, format!("test-{}@example.com", user_a_id));
 
     // 4. Call mark read endpoint for user B's notification using user A's token
     let response = ctx
@@ -530,16 +492,7 @@ async fn mark_already_read_notification_safe_handling() {
     .expect("Failed to create notification");
 
     // 3. Generate token
-    let claims = UserClaims {
-        user_id,
-        email: format!("test-{}@example.com", user_id),
-    };
-    let token = encode(
-        &Header::default(),
-        &claims,
-        &EncodingKey::from_secret(b"secret_key_change_in_production"),
-    )
-    .expect("Failed to generate token");
+    let token = generate_user_token(user_id, format!("test-{}@example.com", user_id));
 
     // 4. Call mark read endpoint again — should be idempotent
     let response = ctx

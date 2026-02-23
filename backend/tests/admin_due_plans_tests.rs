@@ -25,9 +25,11 @@ pub fn generate_admin_token() -> String {
 
 pub fn generate_user_token() -> String {
     let user_id = uuid::Uuid::new_v4();
+    let exp = (chrono::Utc::now() + chrono::Duration::hours(24)).timestamp() as usize;
     let claims = UserClaims {
         user_id,
         email: "user@inheritx.test".to_string(),
+        exp,
     };
     encode(
         &Header::default(),

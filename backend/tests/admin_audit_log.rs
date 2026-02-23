@@ -11,9 +11,11 @@ use tower::ServiceExt;
 use uuid::Uuid;
 
 fn generate_user_token(user_id: Uuid) -> String {
+    let exp = (chrono::Utc::now() + chrono::Duration::hours(24)).timestamp() as usize;
     let claims = UserClaims {
         user_id,
         email: format!("test-{}@example.com", user_id),
+        exp,
     };
     encode(
         &Header::default(),
