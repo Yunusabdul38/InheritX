@@ -10,10 +10,12 @@ use tower::ServiceExt; // for `oneshot`
 
 pub fn generate_admin_token() -> String {
     let admin_id = uuid::Uuid::new_v4();
+    let exp = (chrono::Utc::now() + chrono::Duration::hours(24)).timestamp() as usize;
     let claims = AdminClaims {
         admin_id,
         email: "admin@inheritx.test".to_string(),
         role: "admin".to_string(),
+        exp,
     };
     encode(
         &Header::default(),
