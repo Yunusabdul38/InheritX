@@ -873,8 +873,8 @@ fn test_nft_minting_and_burning() {
     let (client, token_addr, collateral_addr, admin) = setup(&env);
 
     // Register NFT contract
-    let nft_id = env.register_contract_wasm(None, loan_nft::WASM);
-    let nft_client = loan_nft::Client::new(&env, &nft_id);
+    let nft_id = env.register_contract(None, loan_nft::LoanNFT);
+    let nft_client = LoanNFTClient::new(&env, &nft_id);
     nft_client.initialize(&client.address);
 
     // Set NFT token in lending contract

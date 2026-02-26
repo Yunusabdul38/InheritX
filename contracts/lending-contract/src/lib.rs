@@ -55,8 +55,13 @@ pub struct LoanMetadata {
     pub due_date: u64,
 }
 
-mod loan_nft {
-    soroban_sdk::contractimport!(file = "../target/wasm32-unknown-unknown/release/loan_nft.wasm");
+#[soroban_sdk::contractclient(name = "LoanNFTClient")]
+pub trait LoanNFTInterface {
+    fn initialize(env: Env, admin: Address);
+    fn mint(env: Env, to: Address, metadata: LoanMetadata);
+    fn burn(env: Env, loan_id: u64);
+    fn get_metadata(env: Env, loan_id: u64) -> Option<LoanMetadata>;
+    fn owner_of(env: Env, loan_id: u64) -> Option<Address>;
 }
 
 // ─────────────────────────────────────────────────
@@ -579,10 +584,10 @@ impl LendingContract {
 
         // Mint NFT if token is set
         if let Some(nft_token) = Self::get_nft_token(&env) {
-            let nft_client = loan_nft::Client::new(&env, &nft_token);
+            let nft_client = LoanNFTClient::new(&env, &nft_token);
             nft_client.mint(
                 &borrower,
-                &loan_nft::LoanMetadata {
+                &LoanMetadata {
                     borrower: borrower.clone(),
                     collateral_amount,
                     collateral_token: collateral_token.clone(),
@@ -684,7 +689,7 @@ impl LendingContract {
 
         // Burn NFT if token is set
         if let Some(nft_token) = Self::get_nft_token(&env) {
-            let nft_client = loan_nft::Client::new(&env, &nft_token);
+            let nft_client = LoanNFTClient::new(&env, &nft_token);
             nft_client.burn(&loan.loan_id);
         }
 
