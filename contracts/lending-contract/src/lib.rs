@@ -64,26 +64,6 @@ pub trait LoanNFTInterface {
     fn owner_of(env: Env, loan_id: u64) -> Option<Address>;
 }
 
-#[contracttype]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct LoanMetadata {
-    pub loan_id: u64,
-    pub borrower: Address,
-    pub principal: u64,
-    pub collateral_amount: u64,
-    pub collateral_token: Address,
-    pub due_date: u64,
-}
-
-#[soroban_sdk::contractclient(name = "LoanNFTClient")]
-pub trait LoanNFTInterface {
-    fn initialize(env: Env, admin: Address);
-    fn mint(env: Env, to: Address, metadata: LoanMetadata);
-    fn burn(env: Env, loan_id: u64);
-    fn get_metadata(env: Env, loan_id: u64) -> Option<LoanMetadata>;
-    fn owner_of(env: Env, loan_id: u64) -> Option<Address>;
-}
-
 // ─────────────────────────────────────────────────
 // Events
 // ─────────────────────────────────────────────────
