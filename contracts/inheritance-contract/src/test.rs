@@ -2793,7 +2793,7 @@ fn test_emergency_view_plan_success() {
 fn test_emergency_trigger_inheritance_success() {
     let env = Env::default();
     env.mock_all_auths();
-    let (client, token_id, admin, user) = setup_with_token_and_admin(&env);
+    let (client, token_id, _admin, user) = setup_with_token_and_admin(&env);
     let trusted_contact = create_test_address(&env, 99);
 
     let params = plan_params(
