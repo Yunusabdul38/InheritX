@@ -1,7 +1,6 @@
 use inheritx_backend::legacy_content::{LegacyContentService, UploadMetadata};
 use sqlx::PgPool;
 
-
 mod helpers;
 
 #[sqlx::test]
